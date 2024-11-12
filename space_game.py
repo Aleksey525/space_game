@@ -1,6 +1,10 @@
 import asyncio
 import curses
+import random
 import time
+
+
+SYMBOLS_FOR_STARS = '+*.:'
 
 
 async def blink(canvas, row, column, symbol='*'):
@@ -25,9 +29,13 @@ async def blink(canvas, row, column, symbol='*'):
 def draw(canvas):
     curses.curs_set(0)
     canvas.border()
-    rows = [5, 6, 7, 8, 9]
-    columns = [20, 20, 20, 20, 20]
-    coroutines = [blink(canvas, row, column) for row, column in zip(rows, columns)]
+    rows, columns = canvas.getmaxyx()
+    coroutines = [
+        blink(canvas, random.randint(1, rows - 3),
+              random.randint(1, columns - 3),
+              random.choice(list(SYMBOLS_FOR_STARS))) for _ in range(100)
+    ]
+
     while True:
         for coroutine in coroutines.copy():
             try:
@@ -43,3 +51,4 @@ def draw(canvas):
 if __name__ == '__main__':
     curses.update_lines_cols()
     curses.wrapper(draw)
+
