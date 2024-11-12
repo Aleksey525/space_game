@@ -3,36 +3,23 @@ import curses
 import time
 
 
-class EventLoopCommand():
-
-    def __await__(self):
-        return (yield self)
-
-
-class Sleep(EventLoopCommand):
-
-    def __init__(self, seconds):
-        self.seconds = seconds
-
-
-async def go_to_sleep(sec):
-    sleep_time = Sleep(sec)
-    await sleep_time
-
-
 async def blink(canvas, row, column, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        await go_to_sleep(2)
+        for _ in range (2 * 10):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        await go_to_sleep(0.3)
+        for _ in range(3):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        await go_to_sleep(0.5)
+        for _ in range(5):
+            await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        await go_to_sleep(0.3)
+        for _ in range(3):
+            await asyncio.sleep(0)
 
 
 def draw(canvas):
@@ -49,7 +36,7 @@ def draw(canvas):
                 coroutines.remove(coroutine)
         if len(coroutines) == 0:
             break
-        time.sleep(0.4)
+        time.sleep(0.1)
         canvas.refresh()
 
 
