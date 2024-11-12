@@ -7,7 +7,10 @@ import time
 SYMBOLS_FOR_STARS = '+*.:'
 
 
-async def blink(canvas, row, column, symbol='*'):
+async def blink(canvas, row, column, animation_offset, symbol='*'):
+    for _ in range(int(animation_offset * 10)):
+        await asyncio.sleep(0)
+
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
         for _ in range (2 * 10):
@@ -33,6 +36,7 @@ def draw(canvas):
     coroutines = [
         blink(canvas, random.randint(1, rows - 3),
               random.randint(1, columns - 3),
+              random.randint(1, 20),
               random.choice(list(SYMBOLS_FOR_STARS))) for _ in range(100)
     ]
 
