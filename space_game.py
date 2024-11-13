@@ -5,7 +5,7 @@ import random
 import time
 
 
-from curses_tools import draw_frame
+from curses_tools import draw_frame, read_controls
 
 
 SYMBOLS_FOR_STARS = '+*.:'
@@ -63,16 +63,18 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         column += columns_speed
 
 
-async def animate_spaceship(canvas, row, column, images):
+async def animate_spaceship(canvas, row, column, ship_images):
     while True:
-        for image in images:
-            draw_frame(canvas, row, column, image)
+        control = read_controls(canvas)
+        for ship_image in ship_images:
+            row, column = get_ship_location(row, column, control)
+            draw_frame(canvas, row, column, ship_image)
             for i in range(2):
                 await asyncio.sleep(0)
-            draw_frame(canvas, row, column, image, negative=True)
+            draw_frame(canvas, row, column, ship_image, negative=True)
 
 
-def load_ship(directory_name):
+def load_images(directory_name):
     ship_images = []
     for filename in os.listdir(directory_name):
         file_path = os.path.join(directory_name, filename)
@@ -89,8 +91,15 @@ def get_frame_size(text):
     return rows, columns
 
 
+def get_ship_location(current_row, current_column, control):
+    control_row, control_column, _ = control
+    new_row = current_row + control_row
+    new_column = current_column + control_column
+    return new_row, new_column
+
+
 def draw(canvas):
-    ship_images = load_ship('spaceship')
+    ship_images = load_images('spaceship')
     curses.curs_set(0)
     canvas.border()
     canvas.nodelay(True)
