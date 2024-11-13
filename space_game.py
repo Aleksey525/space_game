@@ -110,7 +110,7 @@ def get_ship_location(canvas, current_row, current_column, controls, ship_image)
 
 def draw(canvas):
     ship_images = load_images('spaceship')
-    curses.curs_set(0)
+    curses.curs_set(False)
     canvas.border()
     canvas.nodelay(True)
     rows, columns = canvas.getmaxyx()
