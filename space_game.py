@@ -69,9 +69,9 @@ async def animate_spaceship(canvas, row, column, ship_images):
     while True:
         control = read_controls(canvas)
         for ship_image in ship_images:
-            row, column = get_ship_location(row, column, control)
+            row, column = get_ship_location(canvas, row, column, control, ship_image)
             draw_frame(canvas, row, column, ship_image)
-            for i in range(2):
+            for _ in range(2):
                 await asyncio.sleep(0)
             draw_frame(canvas, row, column, ship_image, negative=True)
 
@@ -80,7 +80,6 @@ def load_images(directory_name):
     ship_images = []
     for filename in os.listdir(directory_name):
         file_path = os.path.join(directory_name, filename)
-        print(file_path)
         with open(file_path, 'r', encoding='UTF-8') as file:
             ship_images.append(file.read())
     return ship_images
@@ -93,11 +92,19 @@ def get_frame_size(text):
     return rows, columns
 
 
-def get_ship_location(current_row, current_column, control):
-    control_row, control_column, _ = control
-    new_row = current_row + control_row
-    new_column = current_column + control_column
-    return new_row, new_column
+def get_ship_location(canvas, current_row, current_column, controls, ship_image):
+    rows, columns = canvas.getmaxyx()
+    frame_rows, frame_columns = get_frame_size(ship_image)
+    max_row, max_column = rows - frame_rows - 1, columns - frame_columns - 1
+    controls_row, controls_column, _ = controls
+
+    new_row = current_row + controls_row
+    new_column = current_column + controls_column
+
+    row = max(0, min(new_row, max_row))
+    column = max(0, min(new_column, max_column))
+
+    return row, column
 
 
 def draw(canvas):
@@ -106,6 +113,11 @@ def draw(canvas):
     canvas.border()
     canvas.nodelay(True)
     rows, columns = canvas.getmaxyx()
+
+    frame_rows, frame_columns = get_frame_size(ship_images[0])
+    ship_row = max(0, min(rows - frame_rows - 1, rows / 2 - frame_rows / 2))
+    ship_column = max(0, min(columns - frame_columns - 1, columns / 2 - frame_columns / 2))
+
     coroutines = [
         blink(canvas, random.randint(1, rows - BOARD_SIZE),
               random.randint(1, columns - BOARD_SIZE),
@@ -114,8 +126,8 @@ def draw(canvas):
     ]
 
     coroutines.append(animate_spaceship(canvas,
-                                        rows - 10,
-                                        columns / 2 - 2,
+                                        ship_row,
+                                        ship_column,
                                         ship_images)
                       )
 
