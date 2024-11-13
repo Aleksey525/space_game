@@ -14,25 +14,20 @@ BOARD_SIZE = 2
 
 
 async def blink(canvas, row, column, animation_offset, symbol='*'):
-    for _ in range(int(animation_offset * 10)):
-        await asyncio.sleep(0)
+    await sleep(animation_offset)
 
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        for _ in range (2 * 10):
-            await asyncio.sleep(0)
+        await sleep(2)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(3):
-            await asyncio.sleep(0)
+        await sleep(0.3)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for _ in range(5):
-            await asyncio.sleep(0)
+        await sleep(0.5)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(3):
-            await asyncio.sleep(0)
+        await sleep(0.3)
 
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
@@ -74,6 +69,12 @@ async def animate_spaceship(canvas, row, column, ship_images):
             for _ in range(2):
                 await asyncio.sleep(0)
             draw_frame(canvas, row, column, ship_image, negative=True)
+
+
+async def sleep(seconds):
+    iteration_count = int(seconds * 10)
+    for _ in range(iteration_count):
+        await asyncio.sleep(0)
 
 
 def load_images(directory_name):
