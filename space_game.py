@@ -4,11 +4,13 @@ import os
 import random
 import time
 
-
 from curses_tools import draw_frame, read_controls
 
 
 SYMBOLS_FOR_STARS = '+*.:'
+STARS_COUNT = 150
+TIC_TIMEOUT = 0.1
+BOARD_SIZE = 2
 
 
 async def blink(canvas, row, column, animation_offset, symbol='*'):
@@ -105,10 +107,10 @@ def draw(canvas):
     canvas.nodelay(True)
     rows, columns = canvas.getmaxyx()
     coroutines = [
-        blink(canvas, random.randint(1, rows - 3),
-              random.randint(1, columns - 3),
+        blink(canvas, random.randint(1, rows - BOARD_SIZE),
+              random.randint(1, columns - BOARD_SIZE),
               random.randint(1, 20),
-              random.choice(list(SYMBOLS_FOR_STARS))) for _ in range(150)
+              random.choice(list(SYMBOLS_FOR_STARS))) for _ in range(STARS_COUNT)
     ]
 
     coroutines.append(animate_spaceship(canvas,
@@ -125,7 +127,7 @@ def draw(canvas):
                 coroutine.send(None)
             except StopIteration:
                 coroutines.remove(coroutine)
-        time.sleep(0.1)
+        time.sleep(TIC_TIMEOUT)
         canvas.refresh()
 
 
