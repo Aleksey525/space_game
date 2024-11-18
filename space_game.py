@@ -69,9 +69,10 @@ async def animate_spaceship(canvas, row, column, ship_images):
         control = read_controls(canvas)
         row, column = get_ship_location(canvas, row, column, control, ship_image)
         draw_frame(canvas, row, column, ship_image)
-        await sleep(TIC_TIMEOUT)
+        control = read_controls(canvas)
+        row, column = get_ship_location(canvas, row, column, control, ship_image)
         draw_frame(canvas, row, column, ship_image, negative=True)
-        await sleep(TIC_TIMEOUT)
+        await asyncio.sleep(0)
 
 
 async def sleep(seconds):
